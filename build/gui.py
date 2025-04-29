@@ -94,6 +94,14 @@ def mostrar_diagnostico():
     texto_hora_diag = capa_diag.create_text(
         398.0, 100.0, anchor="n", text="00:00", fill="#FFFFFF", font=("Inter Bold", 72 * -1)
     )
+    #FFT1
+    image_5 = PhotoImage(file=diag_assets("image_5.png"))
+    capa_diag.image_5 = image_5
+    capa_diag.create_image(650.0, 703.0, image=image_5)
+    #FFT2
+    image_7 = PhotoImage(file=diag_assets("image_7.png"))
+    capa_diag.image_7 = image_7
+    capa_diag.create_image(850.0, 460.0, image=image_7)
 
     image_3 = PhotoImage(file=diag_assets("image_3.png"))
     capa_diag.image_3 = image_3
@@ -106,15 +114,16 @@ def mostrar_diagnostico():
     image_4_freq4 = PhotoImage(file=diag_assets("4.png"))
 
     capa_diag.image_4_actual = image_4_default
-    image_4_id = capa_diag.create_image(735.0, 416.0, image=image_4_default)
+    image_4_id = capa_diag.create_image(750.0, 176.0, image=image_4_default)
 
-    image_5 = PhotoImage(file=diag_assets("image_5.png"))
-    capa_diag.image_5 = image_5
-    capa_diag.create_image(735.0, 703.0, image=image_5)
+    
 
     image_6 = PhotoImage(file=diag_assets("image_6.png"))
     capa_diag.image_6 = image_6
     capa_diag.create_image(1190.0, 538.0, image=image_6)
+
+    
+
 
     # Parámetros de audio
     DURACION = 0.05
@@ -126,7 +135,7 @@ def mostrar_diagnostico():
     # Gráfico de amplitud
     fig, ax = plt.subplots(figsize=(2.5, 6.0), dpi=100, facecolor='black')
     buffer_audio = np.zeros(BUFFER_SIZE)
-    line, = ax.plot(buffer_audio, np.arange(BUFFER_SIZE), color='red')
+    line, = ax.plot(buffer_audio, np.arange(BUFFER_SIZE), color='orange')
     ax.set_facecolor('black')
     ax.set_xlim(-0.5, 0.5)
     ax.set_ylim(0, BUFFER_SIZE)
@@ -141,7 +150,7 @@ def mostrar_diagnostico():
     fig_fft, ax_fft = plt.subplots(figsize=(6.0, 2.0), dpi=100, facecolor='#E6E6E6')
     freqs = np.fft.rfftfreq(FRAMES, 1 / FS)
     espectro = np.zeros(len(freqs))
-    line_fft, = ax_fft.plot(freqs, espectro, color='blue')
+    line_fft, = ax_fft.plot(freqs, espectro, color='orange')
     ax_fft.set_facecolor('#E6E6E6')
     ax_fft.set_xlim(freqs[0], freqs[-1])
     ax_fft.set_ylim(0, 1.0)
@@ -150,7 +159,7 @@ def mostrar_diagnostico():
 
     canvas_fft = FigureCanvasTkAgg(fig_fft, master=capa_diag)
     canvas_fft_widget = canvas_fft.get_tk_widget()
-    canvas_fft_widget.place(x=585, y=623, width=300, height=160)
+    canvas_fft_widget.place(x=600, y=623, width=300, height=160)
 
     texto_frec = capa_diag.create_text(
         735.0, 800.0,
@@ -158,6 +167,28 @@ def mostrar_diagnostico():
         fill="black",
         font=("Arial", 18)
     )
+
+
+    # === NUEVA FFT PARA AUDIO2 ===
+    fig_fft2, ax_fft2 = plt.subplots(figsize=(4.0, 2.0), dpi=100, facecolor='#E6E6E6')
+    freqs2 = np.fft.rfftfreq(FRAMES, 1 / FS)
+    espectro2 = np.zeros(len(freqs2))
+    line_fft2, = ax_fft2.plot(freqs2, espectro2, color='green')
+    ax_fft2.set_facecolor('#E6E6E6')
+    ax_fft2.set_xlim(freqs2[0], freqs2[-1])
+    ax_fft2.set_ylim(0, 1.0)
+    ax_fft2.axis('off')
+    fig_fft2.subplots_adjust(left=0, right=1, top=1, bottom=0)
+
+    canvas_fft2 = FigureCanvasTkAgg(fig_fft2, master=capa_diag)
+    canvas_fft_widget2 = canvas_fft2.get_tk_widget()
+    canvas_fft_widget2.place(x=600, y=380, width=300, height=160)
+
+
+
+
+
+
     ##BARRIDO #2
     fig2, ax2 = plt.subplots(figsize=(2.5, 6.0), dpi=100, facecolor='black')
     buffer_audio_2 = np.zeros(BUFFER_SIZE)
@@ -201,10 +232,20 @@ def mostrar_diagnostico():
 
             freqs_local = np.fft.rfftfreq(len(audio), d=1 / RATE)  # 👈 asegura que longitud de X e Y coincidan
 
+             # FFT de audio2
+            fft2 = np.abs(np.fft.rfft(audio2))
+            fft2 = fft2 / np.max(fft2) if np.max(fft2) != 0 else fft2
+            freqs_local2 = np.fft.rfftfreq(len(audio2), d=1 / RATE)  # 👈 asegura que longitud de X e Y coincidan
+
             # Asignar datos FFT
             line_fft.set_xdata(freqs_local)
             line_fft.set_ydata(fft)
             canvas_fft.draw()
+
+            # Asignar datos FFT audio2
+            line_fft2.set_xdata(freqs_local2)
+            line_fft2.set_ydata(fft2)
+            canvas_fft2.draw()
 
             # Frecuencia dominante
             indice_max = np.argmax(fft)
@@ -240,6 +281,8 @@ def mostrar_diagnostico():
 
     actualizar_grafico_audio()
     actualizar_hora_diag()
+
+    
 
 ## MENU PRINCIPAL ##
 canvas = Canvas(

@@ -5,7 +5,7 @@
 
 from pathlib import Path
 import subprocess
-
+from datetime import datetime
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
@@ -121,14 +121,19 @@ image_2 = canvas.create_image(
     image=image_image_2
 )
 
-canvas.create_text(
-    270.0,
+hora_texto = canvas.create_text(
+    300.0,
     92.0,
     anchor="nw",
     text="HH:MM",
     fill="#FFFFFF",
     font=("Inter Bold", 72 * -1)
 )
+
+def actualizar_hora():
+    ahora = datetime.now().strftime("%H:%M")  # Formato de hora: 24 horas
+    canvas.itemconfig(hora_texto, text=ahora)  # Cambia el texto del canvas
+    window.after(1000, actualizar_hora)  # Vuelve a llamar esta función cada segundo (1000 ms)
 
 canvas.create_text(
     619.0,
@@ -156,5 +161,7 @@ canvas.create_text(
     fill="#060606",
     font=("Inter Bold", 50 * -1)
 )
+
+actualizar_hora()
 window.resizable(False, False)
 window.mainloop()
